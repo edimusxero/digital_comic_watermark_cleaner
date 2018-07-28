@@ -4,3 +4,6 @@ I have a large library of digital comic files which I have accumulated over the 
 Initial release is just a simple php script with no flair. Future versions might look nicer but aesthetics was not my intent, functionality was.
 
 As of now this only processes .cbz files.  All files have been tagged using comic tagger
+
+
+Initially created to run on a web server but it will indeed work from a command line (the output isn't optomized for this but it works)
