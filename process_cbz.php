@@ -14,7 +14,7 @@
         $zip = new ZipArchive;
 
         if ($zip->open($zip_file) === TRUE) {
-            echo '<pre>';
+            //echo '<pre>';
             echo 'Now processing -- ' . basename($zip_file) . PHP_EOL;
 
             for( $i = 0; $i < $zip->numFiles; $i++ ){
@@ -23,7 +23,7 @@
                 $delete_me = $stat['name'];
 
                 // Matching files that begin with z or ZZ and removing them, haven't run into an issue (yet) with comic jpg files using that naming scheme
-                if(preg_match("/.+\.SFV|.+\.nfo|^z.*\.jpg|^ZZ.*\.jpg/",basename($delete_me))){
+                if(preg_match("/^.*\.txt|^.+\.SFV|^.+\.nfo|^z.*\.jpg|^ZZ.*\.jpg|^xx.*\.jpg/",basename($delete_me))){
                     echo "Deleting --- $file_name";
                     $zip->deleteName($delete_me);
                     continue;
@@ -34,10 +34,10 @@
                     $zip->deleteName($delete_me);
                 }
                 // Used this echo when trying to figure out which files to ban
-                #echo $file_name;
+                //echo $file_name;
             }
 
-            echo '</pre>';
+            //echo '</pre>';
 
             ob_flush();
             flush();
