@@ -38,3 +38,11 @@ ztattoo.jpg
 Zone3 copy.jpg
 zebra.jpg
 was.jpg
+xx1-WildstormNews.jpg
+ComicInfo.xml
+Z.jpg
+ZEYES.jpg
+Z-T-Head.jpg
+.DS_Store
+ZMM.jpg
+YYYY.jpg
