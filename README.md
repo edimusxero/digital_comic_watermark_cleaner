@@ -7,3 +7,6 @@ As of now this only processes .cbz files.  All files have been tagged using comi
 
 
 Initially created to run on a web server but it will indeed work from a command line (the output isn't optomized for this but it works)
+
+
+Use with caution, I do not take responsibilty for you nuking your library.
