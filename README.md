@@ -10,3 +10,6 @@ Initially created to run on a web server but it will indeed work from a command 
 
 
 Use with caution, I do not take responsibilty for you nuking your library.
+
+
+There is a now a caching file which files that are processed will be added to.  Items on this list are skipped next run.  As of now the file needs to exist to run.  Will implement automatically creating the file if not present in future updates.
