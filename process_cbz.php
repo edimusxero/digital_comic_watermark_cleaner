@@ -3,17 +3,28 @@
     ini_set('max_execution_time', 0);
 
     // Set to path of yout comic repository, it will open files recursively
-    $process_files = glob('<folder>/*.cbz');
-    $ban_file = '<folder>/bans.txt';
-    
+    $process_files  = glob('T:/Comics/*/*/*.cbz');
+    $ban_file       = 'D:/comics/bans.txt';
+    $cache_file     = 'D:/comics/cache.txt';
+
     $bans = file($ban_file, FILE_IGNORE_NEW_LINES);
-    
+    $cache = file($cache_file, FILE_IGNORE_NEW_LINES);
+
     $array_size = count($process_files);
     $x = 1;
 
     foreach($process_files as $zip_file){
-        $zip = new ZipArchive;
         echo "Processing file $x of $array_size \r";
+        
+        if(in_array(basename($zip_file),$cache)){
+            //echo "File " . basename($zip_file) . " has already been processed.  Moving to next" . PHP_EOL;
+            $x++;
+            continue;
+        } else {
+            $cache = cache_processed_file($zip_file,$cache,$cache_file);
+        }
+
+        $zip = new ZipArchive;
 
         if ($zip->open($zip_file) === TRUE) {
             echo PHP_EOL . 'Now processing -- ' . basename($zip_file) . PHP_EOL .PHP_EOL;
@@ -25,13 +36,6 @@
             $clean_file = str_replace('#', '', $clean_file);
 
             $max = $zip->numFiles;
-
-            // This section is for listing the last 2 files in the zip, if there are any files I missed from my bans, they would be here
-            //$last_file = $zip->statIndex($max - 1);
-            //$second_to_last_file = $zip->statIndex($max - 2);
-
-            //echo $second_to_last_file['name'] .  PHP_EOL;
-            //echo $last_file['name'] .  PHP_EOL . PHP_EOL;
 
             $contents = array();
             $remove_folders = array();
@@ -66,7 +70,7 @@
 
                 $bans = check_for_new_bans($delete_me,$bans,$ban_file,$comic);
                 
-                check_for_invalid($comic,$delete_me,$zip_file,$zip);
+                $is_valid = check_for_invalid($comic,$delete_me,$zip_file,$zip);
 
                 // Deletes anything from the ban list
                 if (in_array(basename($delete_me), $bans)) {
@@ -76,9 +80,15 @@
                 }
 
                 // Renames the files to match the archive name + page number
-                echo "\t- Renaming - $delete_me to " . basename($new_name) . PHP_EOL;
-                $zip->renameName($delete_me,basename($new_name));
-
+                if($is_valid){
+                    //if($delete_me === basename($new_name)){
+                    //    echo "No change - continuing" . PHP_EOL;
+                    //    break;
+                    //} else {
+                        echo "\t- Renaming - $delete_me to " . basename($new_name) . PHP_EOL;
+                        $zip->renameName($delete_me,basename($new_name));
+                    //}
+                }
                 $counter++;
             }
             echo PHP_EOL . '-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --' . PHP_EOL;
@@ -89,9 +99,6 @@
                     $zip->deleteName($delFolder);
                 }
             }
-
-            ob_flush();
-            flush();
             $zip->close();
         } else {
             echo 'failed';
@@ -114,7 +121,7 @@
             return($file);
         }
     }
-    
+
     function file_naming_convention($cnt,$clean,$ext){
         // Adds number padding to page number
         if($cnt < 10){
@@ -126,21 +133,21 @@
         }
         return($clean . ' - ' . $num . "$ext");
     }
-    
+
     function check_for_invalid($c,$d,$z,$zip){
         // Global check which will match any sfv,nfo, log or txt file (with a few others from some watermarks).  Deletes file if found
-        if(preg_match('/^.*\.sfv$|^.*\.nfo$|^.*\.txt$|^.*Scanned By.*|^.*ResinDCP.*$|^.*resindcp.*$|^.*Resin-DCP.*$|^.*\.log$/',basename($d))){
+        if(preg_match('/^.*\.sfv$|^.*\.nfo$|^.*\.htm$|^.*\.html$|^.*\.txt$|^.*Scanned By.*|^.*ResinDCP.*$|^.*resindcp.*$|^.*Resin-DCP.*$|^.*\.log$/',basename($d))){
             echo PHP_EOL . "Deleting --- " . basename($c) . " from file - " . basename($z) . PHP_EOL;
             $zip->deleteName($d);
-            return;
+            return(false);
         } else {
-            return;
+            return(true);
         }
     }
-    
+
     function check_for_new_bans($delete,$bans,$bans_file){
         // Looking for files that more than likely should've been banned and adds them to the ban list if found.
-        if(preg_match('/^[zZ]{2}.*$|^[xX]{2}.*$|^[yY]{2}.*$/',basename($delete))){
+        if(preg_match('/^[zZ]{2}.*$|^[xX]{2}.*$|^[yY]{2}.*$|^xtag.*$/',basename($delete))){
             if (!in_array(basename($delete),$bans)) {
                 echo PHP_EOL . basename($delete) . " was not found in ban list but probably should be" . PHP_EOL;
                 echo PHP_EOL . "Adding " . basename($delete) . " to bans list" . PHP_EOL;
@@ -152,6 +159,18 @@
             }
         } else {
             return($bans);
+        }
+    }
+
+    // Cache file check, this way we don't have to rename every single file each time we add something new
+    function cache_processed_file($file,$cache,$cache_file){
+        if (!in_array(basename($file),$cache)) {
+            echo PHP_EOL . "Caching file -- " . basename($file) . PHP_EOL;
+            file_put_contents($cache_file, PHP_EOL . basename($file), FILE_APPEND);
+            $cache = file($cache_file, FILE_IGNORE_NEW_LINES);
+            return($cache);
+        } else {
+            return($cache);
         }
     }
 ?>
