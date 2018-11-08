@@ -4,6 +4,7 @@
 
     // Set to path of yout comic repository, it will open files recursively
     $process_files  = glob('T:/Comics/*/*/*.cbz');
+    //$process_files  = glob('D:/MegaLinks/get/*/*.cbz');
     $ban_file       = 'D:/comics/bans.txt';
     $cache_file     = 'D:/comics/cache.txt';
 
@@ -15,7 +16,7 @@
 
     foreach($process_files as $zip_file){
         echo "Processing file $x of $array_size \r";
-        
+
         if(in_array(basename($zip_file),$cache)){
             //echo "File " . basename($zip_file) . " has already been processed.  Moving to next" . PHP_EOL;
             $x++;
@@ -69,7 +70,7 @@
                 $delete_me = convert_case($delete_me,$zip);
 
                 $bans = check_for_new_bans($delete_me,$bans,$ban_file,$comic);
-                
+
                 $is_valid = check_for_invalid($comic,$delete_me,$zip_file,$zip);
 
                 // Deletes anything from the ban list
@@ -136,7 +137,7 @@
 
     function check_for_invalid($c,$d,$z,$zip){
         // Global check which will match any sfv,nfo, log or txt file (with a few others from some watermarks).  Deletes file if found
-        if(preg_match('/^.*\.sfv$|^.*\.nfo$|^.*\.htm$|^.*\.html$|^.*\.txt$|^.*Scanned By.*|^.*ResinDCP.*$|^.*resindcp.*$|^.*Resin-DCP.*$|^.*\.log$/',basename($d))){
+        if(preg_match('/^.*\.sfv$|^zX.*$|^.*\.nfo$|^.*\.md5$|^.*\.htm$|^.*\.html$|^.*\.txt$|^.*Scanned By.*|^.*ResinDCP.*$|^.*resindcp.*$|^.*Resin-DCP.*$|^.*\.log$|cookiemonster/',basename($d))){
             echo PHP_EOL . "Deleting --- " . basename($c) . " from file - " . basename($z) . PHP_EOL;
             $zip->deleteName($d);
             return(false);
@@ -147,7 +148,7 @@
 
     function check_for_new_bans($delete,$bans,$bans_file){
         // Looking for files that more than likely should've been banned and adds them to the ban list if found.
-        if(preg_match('/^[zZ]{2}.*$|^[xX]{2}.*$|^[yY]{2}.*$|^xtag.*$/',basename($delete))){
+        if(preg_match('/^[zZ].*$|^[xX]{2}.*$|^[yY]{2}.*$|^xtag.*$/',basename($delete))){
             if (!in_array(basename($delete),$bans)) {
                 echo PHP_EOL . basename($delete) . " was not found in ban list but probably should be" . PHP_EOL;
                 echo PHP_EOL . "Adding " . basename($delete) . " to bans list" . PHP_EOL;
