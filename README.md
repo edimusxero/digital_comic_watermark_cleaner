@@ -5,11 +5,14 @@ Initial release is just a simple php script with no flair. Future versions might
 
 As of now this only processes .cbz files.  All files have been tagged using comic tagger  (https://github.com/davide-romanini/comictagger)
 
+** You don't need to use ComicTagger to name your files.  This will work as long as the comic file is in the following format
+
+        <name> <# issue number> <(date)>.cbz
+
 
 Initially created to run on a web server but it will indeed work from a command line (the output isn't optomized for this but it works)
 
 
 Use with caution, I do not take responsibilty for you nuking your library.
-
 
 There is a now a caching file which files that are processed will be added to.  Items on this list are skipped next run.  As of now the file needs to exist to run.  Will implement automatically creating the file if not present in future updates.
