@@ -54,7 +54,7 @@
             $folders_to_remove = count($remove_folders);
 
             // Sorts array numerically to ensure proper page order
-            sort($contents);
+            natsort($contents);
 
             $counter = 1;
             foreach($contents as $comic){
@@ -82,13 +82,8 @@
 
                 // Renames the files to match the archive name + page number
                 if($is_valid){
-                    //if($delete_me === basename($new_name)){
-                    //    echo "No change - continuing" . PHP_EOL;
-                    //    break;
-                    //} else {
-                        echo "\t- Renaming - $delete_me to " . basename($new_name) . PHP_EOL;
-                        $zip->renameName($delete_me,basename($new_name));
-                    //}
+                    echo "\t- Renaming - $delete_me to " . basename($new_name) . PHP_EOL;
+                    $zip->renameName($delete_me,basename($new_name));
                 }
                 $counter++;
             }
